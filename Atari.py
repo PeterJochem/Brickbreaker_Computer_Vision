@@ -2,7 +2,7 @@
 
 
 
-
+import math
 from graphics import *
 
 
@@ -15,6 +15,8 @@ class brick:
     def __init__(self, x1, y1, x2, y2, color):
         
         self.alive = True
+        self.x1 = x1
+        self.y1 = y1
         self.graphic = Rectangle(Point(x1, y1), Point(x2, y2) )
         self.graphic.setFill(color)
         self.color = color
@@ -191,7 +193,47 @@ class game:
             self.ball.x_velocity = -1 * self.ball.x_velocity
             self.ball.y_velocity = -1 * self.ball.y_velocity
 
+    
+    # Describe the method here
+    def distance(self, x1, y1, x2, y2):
+            
+        distance = (x2 - x1)**2 + (y2 - y1)**2
+
+        distance = math.sqrt(distance)
+
+        return distance
+
+    # Describe here
+    def checkBricksBall(self):
         
+        # Describes how close we need to be to the given brick to "collide"
+        distance_threshold = 50
+        
+        # Traverse and check for collisions
+        for i in range(len(self.bricks) ):
+            for j in range(len(self.bricks[0] ) ):
+                
+                if (self.bricks[i][j].alive == True):
+                    if ( self.distance( self.bricks[i][j].x1,  self.bricks[i][j].y1, self.ball.x, self.ball.y ) < distance_threshold ):
+                        # We have a collision
+                        self.bricks[i][j].graphic.undraw()
+                        
+                        self.bricks[i][j].alive = False
+
+                        self.ball.x_velocity = -1 * self.ball.x_velocity
+                        self.ball.y_velocity = -1 * self.ball.y_velocity
+                        return
+
+    # Describe method here 
+    def checkBallWalls(self):
+ 
+        if ( (self.ball.x < 0) or ( self.ball.x > self.window_width) or (self.ball.y < 0) ):
+            self.ball.x_velocity = -1 * self.ball.x_velocity
+            self.ball.y_velocity = -1 * self.ball.y_velocity
+        
+        
+        # Check for the lost ball scenario??
+
 
     def __init__(self, Player1Name):
 
@@ -223,26 +265,27 @@ class game:
         # Let the game logic run
         while(True):
             
-
             keyString = self.win.checkKey()
             if ( keyString == "h" ):
                 self.paddle.graphic.move( self.paddle.delta, 0)
                 
-                self.paddle.x += self.paddle.delta
+                self.paddle.leftX += self.paddle.delta
 
             elif ( keyString == "g" ):
                 self.paddle.graphic.move( -1 * self.paddle.delta, 0)
-                self.paddle.x =  self.paddle.x - self.paddle.delta  
+                self.paddle.leftX =  self.paddle.leftX - self.paddle.delta  
             
             # Move the ball and update it's data structures
             self.ball.graphic.move( self.ball.x_velocity, self.ball.y_velocity  ) 
             self.ball.x = self.ball.x + self.ball.x_velocity
             self.ball.y = self.ball.y + self.ball.y_velocity
-
+            
             # Check for collisions
             self.checkPaddleBall()
-
-
+            
+            self.checkBricksBall()
+    
+            self.checkBallWalls()
 
 
 
