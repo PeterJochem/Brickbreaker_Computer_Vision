@@ -54,7 +54,7 @@ class Ball:
         self.init_Ball(self.game)
     
         self.speed = 0.2 
-        self.x_velocity = 0.1 
+        self.x_velocity = 0.02 
         self.y_velocity = 0.1
 
 
@@ -191,9 +191,17 @@ class game:
     # Describe here
     def checkPaddleBall(self):
         
-        totalVelocity = math.sqrt( (self.ball.x_velocity**2) + (self.ball.y_velocity**2) )
+        # totalVelocity = math.sqrt( (self.ball.x_velocity**2) + (self.ball.y_velocity**2) )
+    
+        x_distance = self.ball.x - self.paddle.leftX
 
-        if ( self.ball.y > self.paddle.leftY  ):
+        threshold = 0
+        if (x_distance < 0):
+            threshold = 0.1
+        else:
+            threshold = self.paddle.paddleWidth
+
+        if ( (self.ball.y > self.paddle.leftY) and ( abs(x_distance) < threshold)   ):
 
             if (  self.distance(self.ball.x, self.ball.y, self.paddle.leftX, self.paddle.leftY) < ( self.paddle.paddleWidth / 2.0 )  ):
                 self.ball.x_velocity = -1 * self.ball.x_velocity    
@@ -219,9 +227,8 @@ class game:
         # Describes how close we need to be to the given brick to "collide"
         distance_threshold = 50
         
-        # Traverse and check for collisions
-        for i in range(len(self.bricks) ):
-            for j in range(len(self.bricks[0] ) ):
+        for i in range( len(self.bricks) - 1, -1, -1  ): 
+          for j in range( len(self.bricks[0] ) ):
                 
                 if (self.bricks[i][j].alive == True):
                     if ( self.distance( self.bricks[i][j].x1,  self.bricks[i][j].y1, self.ball.x, self.ball.y ) < distance_threshold ):
@@ -257,7 +264,7 @@ class game:
         self.win.setBackground("black")
          
 
-        #  Set up the intial configuration
+        ########  Set up the intial configuration ############
         self.bricks = []
 
         # Display your face
