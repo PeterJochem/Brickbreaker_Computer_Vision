@@ -53,8 +53,8 @@ class Ball:
 
         self.init_Ball(self.game)
     
-        self.speed = 0.1 
-        self.x_velocity = 0 
+        self.speed = 0.2 
+        self.x_velocity = 0.1 
         self.y_velocity = 0.1
 
 
@@ -64,15 +64,15 @@ class Paddle:
     # Describe here
     def init_Paddle(self):
         
-        paddleWidth = float(self.game.window_width) / 8.0
+        self.paddleWidth = float(self.game.window_width) / 8.0
         paddleHeight = float(self.game.window_height) / 100.0
 
         paddle_Y = self.game.window_height * 0.95
             
-        x1 = ( float(self.game.window_width)  / 2.0) - (paddleWidth / 2.0)
+        x1 = ( float(self.game.window_width)  / 2.0) - (self.paddleWidth / 2.0)
         y1 = paddle_Y - ( float( paddleHeight )  / 2.0)
 
-        x2 = ( float(self.game.window_width)  / 2.0) + (paddleWidth / 2.0)
+        x2 = ( float(self.game.window_width)  / 2.0) + (self.paddleWidth / 2.0)
         y2 = paddle_Y + (float(paddleHeight) / 2.0) 
         
 
@@ -90,6 +90,8 @@ class Paddle:
         self.leftX = 0
         self.leftY = 0
         
+        self.paddleWidth = 0
+
         # how far the paddle moves when a key is pressed
         self.delta = game.window_width / 25.0
 
@@ -189,8 +191,16 @@ class game:
     # Describe here
     def checkPaddleBall(self):
         
+        totalVelocity = math.sqrt( (self.ball.x_velocity**2) + (self.ball.y_velocity**2) )
+
         if ( self.ball.y > self.paddle.leftY  ):
-            self.ball.x_velocity = -1 * self.ball.x_velocity
+
+            if (  self.distance(self.ball.x, self.ball.y, self.paddle.leftX, self.paddle.leftY) < ( self.paddle.paddleWidth / 2.0 )  ):
+                self.ball.x_velocity = -1 * self.ball.x_velocity    
+            else:
+                self.ball.x_velocity = self.ball.x_velocity 
+            
+
             self.ball.y_velocity = -1 * self.ball.y_velocity
 
     
@@ -227,10 +237,12 @@ class game:
     # Describe method here 
     def checkBallWalls(self):
  
-        if ( (self.ball.x < 0) or ( self.ball.x > self.window_width) or (self.ball.y < 0) ):
+        if ( (self.ball.x < 0) or ( self.ball.x > self.window_width) ):
             self.ball.x_velocity = -1 * self.ball.x_velocity
-            self.ball.y_velocity = -1 * self.ball.y_velocity
+            # self.ball.y_velocity = -1 * self.ball.y_velocity
         
+        if (self.ball.y < 0):
+            self.ball.y_velocity = -1 * self.ball.y_velocity
         
         # Check for the lost ball scenario??
 
