@@ -19,31 +19,41 @@ class brick:
         self.graphic.setFill(color)
         self.color = color
 
+
+# describe the class here
 class Ball:
     
     # Describe here
     def init_Ball(self, game):
 
-        radius = float(game.window_height) / 70.0
+        radius = float(game.window_height) / 95.0
 
-        x = float(game.window_width) / 2.0
-        y = game.window_height * 0.70
-
-
-        self.ball = Circle(Point(x , y), radius)
-        self.ball.setFill("white")
-
-        self.ball.draw(game.win)
+        self.x = float(game.window_width) / 2.0
+        self.y = game.window_height * 0.70
 
 
+        self.graphic = Circle(Point(self.x , self.y), radius)
+        self.graphic.setFill("white")
 
+        self.graphic.draw(game.win)
+
+
+    # Constructor
     def __init__(self, game):
         self.alive = True
         
         self.game = game
         self.ball = None
         
+        # Records where the ball is at this time
+        self.x = 0
+        self.y = 0
+
         self.init_Ball(self.game)
+    
+        self.speed = 0.1 
+        self.x_velocity = 0 
+        self.y_velocity = 0.1
 
 
 # Describe here
@@ -51,17 +61,22 @@ class Paddle:
     
     # Describe here
     def init_Paddle(self):
-
-        paddleWidth = float(self.game.window_width) / 20.0
+        
+        paddleWidth = float(self.game.window_width) / 8.0
         paddleHeight = float(self.game.window_height) / 100.0
 
-        paddle_Y = self.game.window_height * 0.80
-
+        paddle_Y = self.game.window_height * 0.95
+            
         x1 = ( float(self.game.window_width)  / 2.0) - (paddleWidth / 2.0)
         y1 = paddle_Y - ( float( paddleHeight )  / 2.0)
 
         x2 = ( float(self.game.window_width)  / 2.0) + (paddleWidth / 2.0)
         y2 = paddle_Y + (float(paddleHeight) / 2.0) 
+        
+
+        # Data structure records where the left point is
+        self.leftX = x1
+        self.leftY = y1
 
         self.graphic = Rectangle(Point(x1, y1), Point(x2, y2) )
         self.graphic.setFill("purple")
@@ -73,6 +88,9 @@ class Paddle:
         self.leftX = 0
         self.leftY = 0
         
+        # how far the paddle moves when a key is pressed
+        self.delta = game.window_width / 25.0
+
         self.game = game
         
         self.init_Paddle() 
@@ -113,7 +131,7 @@ class game:
                 y1 = (i * brickHeight) + topRow_Y
                 x2 = ( (j + 1) * brickWidth)
                 y2 = ( (i + 1) * brickHeight) + topRow_Y
-               
+                  
                 currentRow.append( brick( x1, y1, x2, y2, currentColor) ) 
 
 
@@ -165,7 +183,14 @@ class game:
                  
                self.bricks[i][j].graphic.draw(self.win)
 
-                
+    
+    # Describe here
+    def checkPaddleBall(self):
+        
+        if ( self.ball.y > self.paddle.leftY  ):
+            self.ball.x_velocity = -1 * self.ball.x_velocity
+            self.ball.y_velocity = -1 * self.ball.y_velocity
+
         
 
     def __init__(self, Player1Name):
@@ -191,16 +216,31 @@ class game:
                     
         self.ball = Ball(self)
         self.paddle = Paddle(self)
+           
+        ######### End of initial setup ############
+        
+        
+        # Let the game logic run
+        while(True):
             
 
-    # Describe function here
-    def getUserInput(self):
-    
-        global win
-        keyString = win.checkKey()
-    
-     
+            keyString = self.win.checkKey()
+            if ( keyString == "h" ):
+                self.paddle.graphic.move( self.paddle.delta, 0)
+                
+                self.paddle.x += self.paddle.delta
 
+            elif ( keyString == "g" ):
+                self.paddle.graphic.move( -1 * self.paddle.delta, 0)
+                self.paddle.x =  self.paddle.x - self.paddle.delta  
+            
+            # Move the ball and update it's data structures
+            self.ball.graphic.move( self.ball.x_velocity, self.ball.y_velocity  ) 
+            self.ball.x = self.ball.x + self.ball.x_velocity
+            self.ball.y = self.ball.y + self.ball.y_velocity
+
+            # Check for collisions
+            self.checkPaddleBall()
 
 
 
