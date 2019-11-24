@@ -15,8 +15,13 @@ class brick:
     def __init__(self, x1, y1, x2, y2, color):
         
         self.alive = True
+        
         self.x1 = x1
         self.y1 = y1
+    
+        self.x2 = x2
+        self.y2 = y2
+        
         self.graphic = Rectangle(Point(x1, y1), Point(x2, y2) )
         self.graphic.setFill(color)
         self.color = color
@@ -225,13 +230,21 @@ class game:
     def checkBricksBall(self):
         
         # Describes how close we need to be to the given brick to "collide"
-        distance_threshold = 50
+        distance_threshold = 30
         
         for i in range( len(self.bricks) - 1, -1, -1  ): 
           for j in range( len(self.bricks[0] ) ):
                 
                 if (self.bricks[i][j].alive == True):
-                    if ( self.distance( self.bricks[i][j].x1,  self.bricks[i][j].y1, self.ball.x, self.ball.y ) < distance_threshold ):
+                    
+                    collision = False
+                    if (  self.distance( self.bricks[i][j].x1,  self.bricks[i][j].y1, self.ball.x, self.ball.y ) < distance_threshold ):
+                        collision = True
+                    elif ( self.distance( self.bricks[i][j].x2,  self.bricks[i][j].y2, self.ball.x, self.ball.y ) < distance_threshold) :
+                        collision = True
+
+                    ####### FIX ME - dont use the bricks's left corner - use the right corner or both
+                    if ( collision == True ):
                         # We have a collision
                         self.bricks[i][j].graphic.undraw()
                         
@@ -240,6 +253,7 @@ class game:
                         self.ball.x_velocity = -1 * self.ball.x_velocity
                         self.ball.y_velocity = -1 * self.ball.y_velocity
                         return
+
 
     # Describe method here 
     def checkBallWalls(self):
