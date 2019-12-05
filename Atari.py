@@ -57,10 +57,11 @@ class Ball:
         self.y = 0
 
         self.init_Ball(self.game)
-    
-        self.speed = 0.2 
-        self.x_velocity = 0.02 
-        self.y_velocity = 0.1
+        
+        self.speed = 0.05 
+
+        self.x_velocity = 0.0 
+        self.y_velocity = 0.01
 
 
 # Describe here
@@ -198,7 +199,11 @@ class game:
         
         # totalVelocity = math.sqrt( (self.ball.x_velocity**2) + (self.ball.y_velocity**2) )
     
-        x_distance = self.ball.x - self.paddle.leftX
+        x_distance = (self.ball.x + 100 ) - self.paddle.leftX
+        
+        # print(self.paddle.leftX)
+        # print( str(self.ball.x) + " - " + str(self.paddle.leftX)  )
+        
 
         threshold = 0
         if (x_distance < 0):
@@ -207,14 +212,20 @@ class game:
             threshold = self.paddle.paddleWidth
 
         if ( (self.ball.y > self.paddle.leftY) and ( abs(x_distance) < threshold)   ):
-
+            
             if (  self.distance(self.ball.x, self.ball.y, self.paddle.leftX, self.paddle.leftY) < ( self.paddle.paddleWidth / 2.0 )  ):
+            
                 self.ball.x_velocity = -1 * self.ball.x_velocity    
             else:
                 self.ball.x_velocity = self.ball.x_velocity 
-            
+       
+            print("Collision detected")
 
-            self.ball.y_velocity = -1 * self.ball.y_velocity
+            
+            # Change speed base on k 
+            self.ball.y_velocity = (-1 * self.ball.y_velocity) * self.k
+            # self.ball.x_velocity = (self.ball.x_velocity) 
+
 
     
     # Describe the method here
@@ -323,8 +334,6 @@ class game:
                     largestContour = cv2.contourArea(contours[i], False)
                     indexOfLargest = i
 
-            #print(indexOfLargest)
-
             cy = -1
             cx = -1
             # Check that we really found a contour in the image
@@ -340,16 +349,21 @@ class game:
                     cy = -1
 
                 cv2.drawContours( frame, [contours[indexOfLargest] ],  0, (0,255,0), 3 )
-                #print("The center of the circle is " + str(cx) + ", " + str(cy) )
 
                 # Draw a line to the center 
                 cv2.line(frame, (cx,cy), (windowCenterX * 2, cy), (255,255,255), 5)
                 cv2.line(frame, (cx,cy), (cx, windowCenterY * 2), (255,255,255), 5)
                 
                 deltaX = self.paddle.leftX - cx
+                deltaY = self.paddle.leftY - cy
+                
+                # Change the paddle's location 
                 self.paddle.leftX = self.paddle.leftX - deltaX
+                self.paddle.leftY = self.paddle.leftY - deltaY
+
 
                 self.paddle.graphic.move( deltaX, 0) 
+                self.k = 1
                 # self.paddle.graphic.y1 = 
                 #self.paddle.graphic.x2 = cx + self.paddle.paddleWidth / 2.0
                 # self.paddle.graphc.y2 = 
@@ -382,6 +396,8 @@ class game:
     def __init__(self, Player1Name):
         
         self.cap = cv2.VideoCapture(0)
+        
+        self.k = 1
 
         # Set up the window
         self.window_height = 800
@@ -437,7 +453,7 @@ class game:
             
             if ( i == 10):
                 # Sample the image for the ball's x and y
-                self.sampleImage()
+                # self.sampleImage()
                 i  = 0
 
 
