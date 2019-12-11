@@ -228,7 +228,8 @@ class game:
     # in order to find where the ball is in space. It updates the data
     # structures 
     def sampleImage(self):
-
+        
+        # This is the center of the window
         windowCenterX = -1
         windowCenterY = -1
 
