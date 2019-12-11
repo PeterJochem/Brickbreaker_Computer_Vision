@@ -233,12 +233,9 @@ class game:
         windowCenterX = -1
         windowCenterY = -1
 
-        # Define the codec and create VideoWriter object
-        # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-
         i = 0
 
-        ret, frame = self.cap.read()
+        imageAcquired, frame = self.cap.read()
 
         height = int( np.size(frame, 0) )
         width = int (np.size(frame, 1) )
@@ -246,20 +243,18 @@ class game:
         windowCenterX = int( float(width) / 2.0)
         windowCenterY = int( float(height) / 2.0)
 
-        if (ret == True):
+        if (imageAcquired == True):
 
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
             # define range of yellow color in HSV
-            lower_yellow = np.array([22,43,136])
-            upper_yellow = np.array([41,149,254])
+            lower_yellow_range = np.array([22,43,136])
+            upper_yellow_range = np.array([41,149,254])
 
             # Threshold the HSV image to get only yellow colors
-            mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+            mask = cv2.inRange(hsv, lower_yellow_range, upper_yellow_range)
 
-            im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-            res = cv2.bitwise_and(frame,frame, mask= mask)
+            ignore2, contours, ignore1 = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
             indexOfLargest = -1
             largestContour = -1
@@ -271,11 +266,11 @@ class game:
 
             cy = -1
             cx = -1
-            # Check that we really found a contour in the image
+        
+            # Check that theres really a contour in the image
             if ( indexOfLargest != -1):
                 M = cv2.moments( contours[indexOfLargest] )
 
-                # FIX ME - Zero division error
                 try:
                     cx = int(M['m10']/M['m00'])
                     cy = int(M['m01']/M['m00'])
