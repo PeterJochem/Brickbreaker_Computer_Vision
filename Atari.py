@@ -224,9 +224,10 @@ class game:
 
             self.ball.y_velocity = -1 * self.ball.y_velocity
 
-     # Describe here
+    # This method takes an image from the webcam and processes it 
+    # in order to find where the ball is in space. It updates the data
+    # structures 
     def sampleImage(self):
-
 
         windowCenterX = -1
         windowCenterY = -1
@@ -236,7 +237,6 @@ class game:
 
         i = 0
 
-        time0 = time.time()
         ret, frame = self.cap.read()
 
         height = int( np.size(frame, 0) )
