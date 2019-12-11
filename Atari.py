@@ -250,23 +250,15 @@ class game:
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
             # define range of yellow color in HSV
-            lower_yellow = np.array([23,41,133])
-            upper_yellow = np.array([40,150,255])
-
-            lower_orange = np.array([18, 40, 90])
-            upper_orange = np.array([27, 255, 255])
+            lower_yellow = np.array([22,43,136])
+            upper_yellow = np.array([41,149,254])
 
             # Threshold the HSV image to get only yellow colors
             mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
             im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-            # Bitwise-AND mask and original image
             res = cv2.bitwise_and(frame,frame, mask= mask)
-            cv2.imshow('frame',frame)
-            cv2.imshow('res', res)
-
-            cv2.drawContours(res, contours, -1, (0,255,0), 3)
 
             indexOfLargest = -1
             largestContour = -1
@@ -290,17 +282,14 @@ class game:
                     cx = -1
                     cy = -1
 
-
+                # This computes the proportional control of the paddle
+                # based on where it is and where the ball is in space
                 deltaX = self.paddle.leftX - cx
                 deltaY = self.paddle.leftY - cy
-
+                
+                # Update the gloabl variable that moves the paddle
                 self.paddle.graphic.move( deltaX, 0)
                 self.paddle.leftX =  self.paddle.leftX - deltaX
-
-            
-            time1 = time.time()
-            loopDuration = time1 - time0
-
 
     
     # Describe the method here
