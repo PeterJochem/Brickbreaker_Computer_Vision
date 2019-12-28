@@ -15,4 +15,4 @@ The game play is really smooth! I am really excited about how this turned out.
 
 Here is an image of the game at it's start
 
-![Game At Start Position](  ).
+![Game At Start Position]( https://github.com/PeterJochem/Brickbreaker_Computer_Vision/blob/master/brickbreaker.png ).
